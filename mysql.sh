@@ -9,21 +9,21 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-Validate(){
-  if [ $1 -ne 0 ]; then
-    echo -e "$2..$R failed $N" &>> $LOGFILE
-    exit 1
-  else
-    echo -e "$2..$G successful $N" &>> $LOGFILE
-  fi
-}
-
 if [ $ID -ne 0 ]; then
   echo -e "$R Please run as root user $N"
     exit 1
 else
   echo -e "$G Running as root user $N"
 fi
+
+Validate(){
+  if [ $1 -ne 0 ]; then
+    echo -e "$2..failed" &>> $LOGFILE
+    exit 1
+  else
+    echo -e "$2.. successful" &>> $LOGFILE
+  fi
+}
 
 dnf install mysql-server -y &>>$LOGFILE
 Validate $? "MySQL installation"
