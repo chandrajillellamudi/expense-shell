@@ -18,10 +18,10 @@ fi
 
 Validate(){
   if [ $1 -ne 0 ]; then
-    echo -e "$2..failed" &>> $LOGFILE
+    echo -e "$2..failed" 
     exit 1
   else
-    echo -e "$2.. successful" &>> $LOGFILE
+    echo -e "$2.. successful" 
   fi
 }
 
