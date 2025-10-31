@@ -8,6 +8,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+echo "Please enter MySQL root password:"
+read -s MYSQL_ROOT_PASSWORD
 
 if [ $ID -ne 0 ]; then
   echo -e "$R Please run as root user $N"
@@ -34,5 +36,12 @@ Validate $? "Enabling MySQL service"
 systemctl start mysqld &>> $LOGFILE
 Validate $? "Starting MySQL service"
 
-mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOGFILE
-Validate $? "Setting up root password"
+#mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOGFILE
+#Validate $? "Setting up root password"
+mysql -h localhost -uroot -p$MYSQL_ROOT_PASSWORD -e 'show databases;' &>> $LOGFILE
+if [ $? -ne 0 ]; then
+  mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD &>> $LOGFILE
+  Validate $? "Setting up root password"
+else
+  echo -e "MySQL root password is correct..$Y Skipping $N"
+fi
