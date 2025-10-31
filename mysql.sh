@@ -4,25 +4,25 @@ ID=$(id -u)
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOGFILE=/tmp/$SCRIPT_NAME-$TIMESTAMP.log
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-NO="\e[0m"
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
 
 Validate(){
   if [ $1 -ne 0 ]; then
-    echo -e "${RED}$2.. failed${NO}" &>> $LOGFILE
+    echo -e "$2..$R failed $N" &>> $LOGFILE
     exit 1
   else
-    echo -e "${GREEN}$2.. successful${NO}" &>> $LOGFILE
+    echo -e "$2..$G successful $N" &>> $LOGFILE
   fi
 }
 
 if [ $ID -ne 0 ]; then
-  echo -e "${RED}Please run as root user${NO}"
+  echo -e "$R Please run as root user $N"
     exit 1
 else
-  echo -e "${GREEN}Running as root user${NO}"
+  echo -e "$G Running as root user $N"
 fi
 
 dnf install mysql-server -y &>>$LOGFILE
