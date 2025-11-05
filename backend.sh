@@ -8,8 +8,8 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
-echo "Please enter your MySQL root password:"
-read -s MYSQL_ROOT_PASSWORD
+# echo "Please enter your MySQL root password:"
+# read -s MYSQL_ROOT_PASSWORD
 
 if [ $ID -ne 0 ]; then
     echo -e "${R}Please run as root user${N}"
@@ -73,7 +73,7 @@ validate $? "Enabling backend service at boot"
 dnf install mysql -y &>> $LOG_FILE
 validate $? "MySQL client installation"
 
-mysql -h db.chandradevops.online -uexpense -p$MYSQL_ROOT_PASSWORD < /app/schema/backend.sql
+mysql -h db.chandradevops.online -uroot -pExpenseApp@1 < /app/schema/backend.sql
 validate $? "Importing backend database schema"
 
 systemctl restart backend &>> $LOG_FILE
