@@ -33,16 +33,16 @@ validate $? "Starting MySQL service"
 systemctl enable mysqld &>> $LOG_FILE
 validate $? "Enabling MySQL service at boot"    
 
-# mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOG_FILE
-# validate $? "Securing MySQL installation"
+mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOG_FILE
+validate $? "Securing MySQL installation"
 
-mysql -h dbchandradevops.online -uroot -p$MYSQL_ROOT_PASSWORD -e "show databases;" &>> $LOG_FILE
-if [ $? -ne 0 ];
-then
-mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD &>> $LOG_FILE
-validate $? "root password setup"
-else
-  echo -e "MySQL is already secured..${Y}SKIPPING${N}"
-fi
+# mysql -h dbchandradevops.online -uroot -p$MYSQL_ROOT_PASSWORD -e "show databases;" &>> $LOG_FILE
+# if [ $? -ne 0 ];
+# then
+# mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD &>> $LOG_FILE
+# validate $? "root password setup"
+# else
+#   echo -e "MySQL is already secured..${Y}SKIPPING${N}"
+# fi
 
 

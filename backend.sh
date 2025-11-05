@@ -73,7 +73,7 @@ validate $? "Enabling backend service at boot"
 dnf install mysql -y &>> $LOG_FILE
 validate $? "MySQL client installation"
 
-mysql -h db.chandradevops.online -uroot -p$MYSQL_ROOT_PASSWORD < /app/schema/backend.sql
+mysql -h db.chandradevops.online -uexpense -p$MYSQL_ROOT_PASSWORD < /app/schema/backend.sql
 validate $? "Importing backend database schema"
 
 systemctl restart backend &>> $LOG_FILE
