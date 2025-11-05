@@ -7,6 +7,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
+echo "Please enter your MySQL root password:"
+read -s MYSQL_ROOT_PASSWORD
 if [ $ID -ne 0 ]; then
     echo -e "${R}Please run as root user${N}"
     exit 1
@@ -34,10 +36,10 @@ validate $? "Enabling MySQL service at boot"
 # mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOG_FILE
 # validate $? "Securing MySQL installation"
 
-mysql -h dbchandradevops.online -uroot -pExpenseApp@1 -e "show databases;" &>> $LOG_FILE
+mysql -h dbchandradevops.online -uroot -p$MYSQL_ROOT_PASSWORD -e "show databases;" &>> $LOG_FILE
 if [ $? -ne 0 ];
 then
-mysql_secure_installation --set-root-pass ExpenseApp@123 &>> $LOG_FILE
+mysql_secure_installation --set-root-pass $MYSQL_ROOT_PASSWORD &>> $LOG_FILE
 validate $? "root password setup"
 else
   echo -e "MySQL is already secured..${Y}SKIPPING${N}"
