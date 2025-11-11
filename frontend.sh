@@ -1,51 +1,80 @@
 #!/bin/bash
+set -e
+set -o pipefail
+
 ID=$(id -u)
 TIMESTAMP=$(date +%F-%H-%M-%S)
-SCRIPT_NAME=$( echo $0 | cut -d'.' -f1)
+SCRIPT_NAME=$(basename "$0" | cut -d'.' -f1)
 LOG_FILE=/tmp/${SCRIPT_NAME}_${TIMESTAMP}.log
+
 R="\e[31m"
 G="\e[32m"
-Y="\e[33m"  
+Y="\e[33m"
 N="\e[0m"
+
+# Root check
 if [ $ID -ne 0 ]; then
     echo -e "${R}Please run as root user${N}"
     exit 1
 else
     echo -e "${G}Running as root user${N}"
 fi
-validate(){
+
+# Validation function
+validate() {
     if [ $1 -ne 0 ]; then
         echo -e "$2..${R} failed${N}"
         exit 1
     else
         echo -e "$2..${G}successful${N}"
-    fi   
+    fi
 }
 
-dnf install nginx -y &>> $LOG_FILE
+
+# Install Nginx and unzip
+dnf install -y nginx &>> $LOG_FILE
 validate $? "Nginx installation"
 
+# Enable Nginx at boot
 systemctl enable nginx &>> $LOG_FILE
 validate $? "Enabling Nginx service at boot"
 
-systemctl start nginx &>> $LOG_FILE
+# Start Nginx
+systemctl start nginx &>> $LOG_FILE || {
+    echo -e "${R}Failed to start Nginx. Testing config...${N}"
+    nginx -t || exit 1
+}
 validate $? "Starting Nginx service"
 
+# Clean default HTML files
 rm -rf /usr/share/nginx/html/* &>> $LOG_FILE
 validate $? "Cleaning default Nginx HTML files"
 
+# Download frontend code
 curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip &>> $LOG_FILE
 validate $? "Downloading frontend code"
 
-cd /usr/share/nginx/html &>> $LOG_FILE
+# Ensure HTML directory exists
+mkdir -p /usr/share/nginx/html
+cd /usr/share/nginx/html
 validate $? "Changing to Nginx HTML directory"
 
+# Unzip frontend
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
+# Copy fixed expense.conf
 cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/conf.d/expense.conf &>> $LOG_FILE
 validate $? "Copying expense Nginx config"
 
+# Set proper permissions
+chown -R nginx:nginx /usr/share/nginx/html
+chmod -R 755 /usr/share/nginx/html
+
+# Test Nginx config
+nginx -t &>> $LOG_FILE
+validate $? "Testing Nginx config"
+
+# Restart Nginx
 systemctl restart nginx &>> $LOG_FILE
 validate $? "Restarting Nginx service"
-
