@@ -43,7 +43,7 @@ validate $? "Changing to Nginx HTML directory"
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
-cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/default.d/expense.conf &>> $LOG_FILE
+cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/conf.d/expense.conf &>> $LOG_FILE
 validate $? "Copying expense Nginx config"
 
 systemctl restart nginx &>> $LOG_FILE
