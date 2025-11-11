@@ -27,8 +27,10 @@ validate(){
 }   
 dnf module disable nodejs -y &>> $LOG_FILE
 validate $? "Disabling NodeJS module"
+
 dnf module enable nodejs:20 -y &>> $LOG_FILE
 validate $? "Enabling NodeJS 20 module"
+
 dnf install nodejs -y &>> $LOG_FILE
 validate $? "NodeJS installation"
 
@@ -73,8 +75,9 @@ validate $? "Enabling backend service at boot"
 dnf install mysql -y &>> $LOG_FILE
 validate $? "MySQL client installation"
 
-mysql -h db.chandradevops.online -uroot -pExpenseApp@1 < /app/schema/backend.sql
-validate $? "Importing backend database schema"
+
+# mysql -h db.chandradevops.online -uroot -pExpenseApp@1 < /app/schema/backend.sql
+# validate $? "Importing backend database schema"
 
 systemctl restart backend &>> $LOG_FILE
 validate $? "Restarting backend service"
