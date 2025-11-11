@@ -15,10 +15,10 @@ else
 fi
 validate(){
     if [ $1 -ne 0 ]; then
-        echo -e "${R}$2.. failed${N}"
+        echo -e "$2..${R} failed${N}"
         exit 1
     else
-        echo -e "${G}$2.. successful${N}"
+        echo -e "$2..${G}successful${N}"
     fi   
 }
 
@@ -42,3 +42,10 @@ validate $? "Changing to Nginx html directory"
 
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
+
+cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/conf.d/expense.conf &>> $LOG_FILE
+validate $? "Copying expense nginx configuration"
+
+systemctl restart nginx &>> $LOG_FILE
+validate $? "Restarting Nginx service"
+
