@@ -4,7 +4,7 @@ Description = Backend Service
 [Service]
 User=root
 Environment=DB_HOST=db.chandradevops.online
-Environment=DB_USER=root
+Environment=DB_USER=expense
 Environment=DB_PASS=ExpenseApp@1
 Environment=DB_NAME=transactions
 ExecStart=/bin/node /app/index.js
