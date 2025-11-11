@@ -36,7 +36,7 @@ validate $? "Enabling MySQL service at boot"
 mysql_secure_installation --set-root-pass ExpenseApp@1 &>> $LOG_FILE
 validate $? "Securing MySQL installation"
 
-mysql -uroot -pExpenseApp@1 < /home/ec2-user/expense-shell/backend.sql &>> $LOG_FILE
+mysql -uexpense -pExpenseApp@1 < /home/ec2-user/expense-shell/backend.sql &>> $LOG_FILE
 validate $? "Importing Database Schema"
 
 
