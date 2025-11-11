@@ -30,10 +30,11 @@ validate() {
     fi
 }
 
+echo -e "${Y}Starting frontend deployment...${N}"
 
 # Install Nginx and unzip
-dnf install -y nginx &>> $LOG_FILE
-validate $? "Nginx installation"
+dnf install -y nginx unzip &>> $LOG_FILE
+validate $? "Nginx and unzip installation"
 
 # Enable Nginx at boot
 systemctl enable nginx &>> $LOG_FILE
@@ -63,9 +64,29 @@ validate $? "Changing to Nginx HTML directory"
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
-# Copy fixed expense.conf
-cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/conf.d/expense.conf &>> $LOG_FILE
-validate $? "Copying expense Nginx config"
+# Create correct Nginx config
+cat << 'EOF' > /etc/nginx/conf.d/expense.conf
+server {
+    listen 80;
+    server_name db.chandradevops.online;
+
+    proxy_http_version 1.1;
+
+    location /api/ {
+        proxy_pass http://backend.chandradevops.online:8080/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /health {
+        stub_status on;
+        access_log off;
+    }
+}
+EOF
+validate $? "Creating correct Nginx config"
 
 # Set proper permissions
 chown -R nginx:nginx /usr/share/nginx/html
@@ -78,3 +99,5 @@ validate $? "Testing Nginx config"
 # Restart Nginx
 systemctl restart nginx &>> $LOG_FILE
 validate $? "Restarting Nginx service"
+
+echo -e "${G}Frontend deployment completed successfully!${N}"
