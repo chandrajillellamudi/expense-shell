@@ -25,26 +25,26 @@ validate(){
 dnf install nginx -y &>> $LOG_FILE
 validate $? "Nginx installation"
 
-systemctl enable nginx &>> $LOG_FILE
-validate $? "Enabling Nginx at boot"
-
 systemctl start nginx &>> $LOG_FILE
 validate $? "Starting Nginx service"
 
+systemctl enable nginx &>> $LOG_FILE
+validate $? "Enabling Nginx service at boot"
+
 rm -rf /usr/share/nginx/html/* &>> $LOG_FILE
-validate $? "Cleaning Nginx default content"
+validate $? "Cleaning default Nginx HTML files"
 
 curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip &>> $LOG_FILE
 validate $? "Downloading frontend code"
 
 cd /usr/share/nginx/html &>> $LOG_FILE
-validate $? "Changing to Nginx html directory"
+validate $? "Changing to Nginx HTML directory"
 
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
-cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/conf.d/expense.conf &>> $LOG_FILE
-validate $? "Copying expense nginx configuration"
+cp /home/ec2-user/expense-shell/expense.conf /etc/nginx/default.d/expense.conf &>> $LOG_FILE
+validate $? "Copying expense Nginx config"
 
 systemctl restart nginx &>> $LOG_FILE
 validate $? "Restarting Nginx service"
