@@ -2,7 +2,7 @@
 Description = Backend Service
 
 [Service]
-User=expense
+User=root
 Environment=DB_HOST=db.chandradevops.online
 Environment=DB_USER=root
 Environment=DB_PASS=ExpenseApp@1
