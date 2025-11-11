@@ -7,8 +7,8 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-echo "Please enter your MySQL root password:"
-read -s MYSQL_ROOT_PASSWORD
+# echo "Please enter your MySQL root password:"
+# read -s MYSQL_ROOT_PASSWORD
 if [ $ID -ne 0 ]; then
     echo -e "${R}Please run as root user${N}"
     exit 1
