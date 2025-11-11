@@ -64,6 +64,10 @@ validate $? "Changing to Nginx HTML directory"
 unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
+# Clean old Nginx conf files to avoid syntax errors
+rm -f /etc/nginx/conf.d/* &>> $LOG_FILE
+validate $? "Cleaning old Nginx conf files"
+
 # Create correct Nginx config
 cat << 'EOF' > /etc/nginx/conf.d/expense.conf
 server {
