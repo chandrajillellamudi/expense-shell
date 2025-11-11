@@ -20,7 +20,6 @@ else
     echo -e "${G}Running as root user${N}"
 fi
 
-# Validation function
 validate() {
     if [ $1 -ne 0 ]; then
         echo -e "$2..${R} failed${N}"
@@ -40,12 +39,8 @@ validate $? "Nginx and unzip installation"
 systemctl enable nginx &>> $LOG_FILE
 validate $? "Enabling Nginx service at boot"
 
-# Start Nginx
-systemctl start nginx &>> $LOG_FILE || {
-    echo -e "${R}Failed to start Nginx. Testing config...${N}"
-    nginx -t || exit 1
-}
-validate $? "Starting Nginx service"
+# Start Nginx (temporary minimal start)
+systemctl start nginx &>> $LOG_FILE || echo -e "${Y}Starting Nginx temporarily to test${N}"
 
 # Clean default HTML files
 rm -rf /usr/share/nginx/html/* &>> $LOG_FILE
@@ -61,17 +56,17 @@ cd /usr/share/nginx/html
 validate $? "Changing to Nginx HTML directory"
 
 # Unzip frontend
-unzip /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
+unzip -o /tmp/frontend.zip -d /usr/share/nginx/html/ &>> $LOG_FILE
 validate $? "Unzipping frontend code"
 
-# Clean old Nginx conf files to avoid syntax errors
+# Clean all old Nginx conf files to avoid syntax errors
 rm -f /etc/nginx/conf.d/* &>> $LOG_FILE
 validate $? "Cleaning old Nginx conf files"
 
 # Create correct Nginx config
 cat << 'EOF' > /etc/nginx/conf.d/expense.conf
 server {
-    listen 80;
+    listen 80 default_server;
     server_name db.chandradevops.online;
 
     proxy_http_version 1.1;
@@ -87,6 +82,11 @@ server {
     location /health {
         stub_status on;
         access_log off;
+    }
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
     }
 }
 EOF
